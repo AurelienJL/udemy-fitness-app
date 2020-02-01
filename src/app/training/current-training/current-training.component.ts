@@ -14,33 +14,35 @@ export class CurrentTrainingComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
-    private trainingService: TrainingService) { }
+    private trainingService: TrainingService
+  ) {}
 
   ngOnInit() {
- this.startOrResumeTimer();
+    this.startOrResumeTimer();
   }
 
   startOrResumeTimer() {
-    const step = this.trainingService.getRunningExercise().duration / 100 * 1000;
+    const step = this.trainingService.getRunningExercise().duration * 10;
     this.timer = setInterval(() => {
       this.progress = this.progress + 1;
       if (this.progress >= 100) {
-        this.trainingService.completeExercise()
+        this.trainingService.completeExercise();
+        clearInterval(this.timer);
       }
     }, step);
   }
 
   onStop() {
     clearInterval(this.timer);
-    this.dialog.open(DialogStopTrainingComponent, {data: this.progress}).afterClosed().subscribe(
-      (isValid: boolean) => {
+    this.dialog
+      .open(DialogStopTrainingComponent, { data: this.progress })
+      .afterClosed()
+      .subscribe((isValid: boolean) => {
         if (isValid) {
-          this.trainingService.cancelExercise(this.progress)
+          this.trainingService.cancelExercise(this.progress);
         } else {
           this.startOrResumeTimer();
         }
-      }
-      );
-    }
-
+      });
   }
+}

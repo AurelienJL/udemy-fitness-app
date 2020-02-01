@@ -1,0 +1,12 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": false,
+  "typescript.preferences.quoteStyle": "auto",
+  "javascript.preferences.quoteStyle": "auto",
+  "prettier.disableLanguages": [
+    "html"
+  ],
+  "html.format.enable": true,
+  "editor.wordWrap": "off",
+  "html.format.indentInnerHtml": true
+}

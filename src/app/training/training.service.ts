@@ -1,22 +1,24 @@
-import { Injectable } from "@angular/core";
-import { AngularFirestore, DocumentChangeAction } from "angularfire2/firestore";
-import { Subject } from "rxjs";
-import { Exercise } from "./exercise.model";
-import { map } from "rxjs/operators";
+import { Injectable } from '@angular/core';
+import { AngularFirestore, DocumentChangeAction } from 'angularfire2/firestore';
+import { Subject } from 'rxjs';
+import { Exercise } from './exercise.model';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class TrainingService {
   runningExerciseChanged = new Subject<Exercise>();
   exercisesChanged = new Subject<Exercise[]>();
+  finishedExercisesChanged = new Subject<Exercise[]>();
+
   private availableExercises: Exercise[] = [];
+
   private runningExercise: Exercise;
-  private pastExercises: Exercise[] = [];
 
   constructor(private angularFirestore: AngularFirestore) {}
 
   fecthAvailableExercises() {
     this.angularFirestore
-      .collection("availableExercises")
+      .collection('availableExercises')
       .snapshotChanges()
       .pipe(
         map(docArray => {
@@ -69,8 +71,13 @@ export class TrainingService {
     this.runningExerciseChanged.next(null);
   }
 
-  getPastExercises() {
-    return this.pastExercises.slice();
+  fetchCompletedOrCancelledExercises() {
+    this.angularFirestore
+      .collection('finishedExercises')
+      .valueChanges()
+      .subscribe((exercises: Exercise[]) => {
+        this.finishedExercisesChanged.next(exercises);
+      });
   }
 
   private addDataToDatabase(exercise: Exercise) {

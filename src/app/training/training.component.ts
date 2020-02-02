@@ -12,7 +12,7 @@ export class TrainingComponent implements OnInit, OnDestroy {
   onGoingTraining = false;
   exerciseSubscrition: Subscription;
 
-  constructor(private trainingService: TrainingService) { }
+  constructor(private trainingService: TrainingService) {}
 
   ngOnInit() {
     this.exerciseSubscrition = this.trainingService.runningExerciseChanged.subscribe(
@@ -27,7 +27,8 @@ export class TrainingComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.exerciseSubscrition.unsubscribe();
+    if (this.exerciseSubscrition) {
+      this.exerciseSubscrition.unsubscribe();
+    }
   }
-
 }

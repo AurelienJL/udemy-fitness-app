@@ -1,13 +1,13 @@
-import { User } from './user.model';
-import { AuthData } from './auth-data.model';
-import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { TrainingComponent } from '../training/training.component';
-import { TrainingService } from '../training/training.service';
-import { MatSnackBar } from '@angular/material';
+import { Subject } from 'rxjs';
+import * as fromRoot from '../app.reducer';
 import { UIService } from '../shared/ui.service';
+import { TrainingService } from '../training/training.service';
+import { AuthData } from './auth-data.model';
+import * as UI from '../shared/ui.actions';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +18,8 @@ export class AuthService {
     private router: Router,
     private auth: AngularFireAuth,
     private trainingService: TrainingService,
-    private uiService: UIService
+    private uiService: UIService,
+    private store: Store<{ ui: fromRoot.State }>
   ) {}
 
   initAuthListener() {
@@ -36,27 +37,33 @@ export class AuthService {
     });
   }
   registerUser(authData: AuthData) {
-    this.uiService.loadingStateChanged.next(true);
+    // this.uiService.loadingStateChanged.next(true);
+    this.store.dispatch(new UI.StartLoading());
     this.auth.auth
       .createUserWithEmailAndPassword(authData.email, authData.password)
       .then(result => {
-        this.uiService.loadingStateChanged.next(false);
+        // this.uiService.loadingStateChanged.next(false);
+        this.store.dispatch(new UI.StopLoading());
       })
       .catch(error => {
-        this.uiService.loadingStateChanged.next(false);
+        // this.uiService.loadingStateChanged.next(false);
+        this.store.dispatch(new UI.StopLoading());
         this.uiService.showSnackbar(error.message, null, 3000);
       });
   }
 
   login(authData: AuthData) {
-    this.uiService.loadingStateChanged.next(true);
+    // this.uiService.loadingStateChanged.next(true);
+    this.store.dispatch(new UI.StartLoading());
     this.auth.auth
       .signInWithEmailAndPassword(authData.email, authData.password)
       .then(result => {
-        this.uiService.loadingStateChanged.next(false);
+        // this.uiService.loadingStateChanged.next(false);
+        this.store.dispatch(new UI.StopLoading());
       })
       .catch(error => {
-        this.uiService.loadingStateChanged.next(false);
+        // this.uiService.loadingStateChanged.next(false);
+        this.store.dispatch(new UI.StopLoading());
         this.uiService.showSnackbar(error.message, null, 3000);
       });
   }
